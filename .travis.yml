@@ -6,4 +6,4 @@ go:
   - master
 
 before_install:
-  - sudo apt-get -y libsystemd-dev
+  - sudo apt-get -y install libsystemd-dev
