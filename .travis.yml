@@ -1,0 +1,9 @@
+---
+language: go
+
+go:
+  - "1.x"
+  - master
+
+before_install:
+  - sudo apt-get -y libsystemd-dev
