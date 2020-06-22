@@ -1,0 +1,17 @@
+---
+version: "3.6"
+
+services:
+  prometheus-opensshd-exporter:
+    image: prometheus-opensshd-exporter
+    build: .
+    command:
+      - "--web.listen-address=tcp:0.0.0.0:9100"
+    volumes:
+      - /etc/machine-id:/etc/machine-id:ro
+      - /var/log/journal:/var/log/journal:ro
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o/dev/null", "http://localhost:9100/"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
