@@ -39,7 +39,7 @@ func TestHandleLogLine(t *testing.T) {
 	want := []string{
 		`# HELP opensshd_auth_results_total OpenSSHd authentication results`,
 		`# TYPE opensshd_auth_results_total counter`,
-		`opensshd_auth_results_total{method="password",result="failed",valid_user="1"} 1`,
+		`opensshd_auth_results_total{method="password",result="failed",user="root",valid_user="1"} 1`,
 	}
 	if err := testutil.CollectAndCompare(authResults, strings.NewReader(strings.Join(want, "\n")+"\n")); err != nil {
 		t.Errorf("handleLogLine metrics: %v", err)

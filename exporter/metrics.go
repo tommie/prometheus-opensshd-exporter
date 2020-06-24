@@ -47,10 +47,17 @@ func updateMetrics(rec interface{}) error {
 	switch r := rec.(type) {
 	case *AuthResult:
 		validUser := "0"
+		var user string
 		if r.IsValid {
 			validUser = "1"
+			user = r.Username
 		}
-		authResults.With(prometheus.Labels{"result": r.AuthMsg, "method": r.Method, "valid_user": validUser}).Inc()
+		authResults.With(prometheus.Labels{
+			"method":     r.Method,
+			"result":     r.AuthMsg,
+			"user":       user,
+			"valid_user": validUser,
+		}).Inc()
 	}
 
 	return nil
@@ -60,7 +67,7 @@ var (
 	authResults = prometheus.NewCounterVec(prometheus.CounterOpts{
 		Name: "opensshd_auth_results_total",
 		Help: "OpenSSHd authentication results",
-	}, []string{"result", "method", "valid_user"})
+	}, []string{"method", "result", "user", "valid_user"})
 )
 
 func init() {
