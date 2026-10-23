@@ -19,7 +19,65 @@ func TestParseLogLine(t *testing.T) {
 			WantErr: ErrMalformedLine,
 		},
 		{
-			Line:    ts + "Disconnected from invalid user web 128.199.91.26 port 48966 [preauth]",
+			Line: ts + "Disconnected from invalid user web 128.199.91.26 port 48966 [preauth]",
+			Want: &AuthResult{
+				AuthMsg:  "closed",
+				Method:   "unknown",
+				IsValid:  false,
+				Username: "web",
+				Addr:     "tcp:128.199.91.26:48966",
+			},
+			WantErr: nil,
+		},
+		{
+			Line: ts + "Disconnected from authenticating user root 182.188.24.243 port 50176 [preauth]",
+			Want: &AuthResult{
+				AuthMsg:  "closed",
+				Method:   "unknown",
+				IsValid:  true,
+				Username: "root",
+				Addr:     "tcp:182.188.24.243:50176",
+			},
+			WantErr: nil,
+		},
+		{
+			Line: ts + "Connection closed by authenticating user git 179.43.153.2 port 33334 [preauth]",
+			Want: &AuthResult{
+				AuthMsg:  "closed",
+				Method:   "unknown",
+				IsValid:  true,
+				Username: "git",
+				Addr:     "tcp:179.43.153.2:33334",
+			},
+			WantErr: nil,
+		},
+		{
+			Line: ts + "Connection closed by invalid user  179.43.153.2 port 33334 [preauth]",
+			Want: &AuthResult{
+				AuthMsg:  "closed",
+				Method:   "unknown",
+				IsValid:  false,
+				Username: "",
+				Addr:     "tcp:179.43.153.2:33334",
+			},
+			WantErr: nil,
+		},
+		{
+			// Starts an invalid user's session, which ends with a line
+			// above. Counting both would count the attempt twice.
+			Line:    ts + "Invalid user erigon from 179.43.153.2 port 33334",
+			Want:    nil,
+			WantErr: ErrUnknownLine,
+		},
+		{
+			// The end of an authenticated session.
+			Line:    ts + "Disconnected from user git 5.9.86.90 port 60100",
+			Want:    nil,
+			WantErr: ErrUnknownLine,
+		},
+		{
+			// A client that never sent a username.
+			Line:    ts + "Connection closed by 182.188.24.243 port 50176 [preauth]",
 			Want:    nil,
 			WantErr: ErrUnknownLine,
 		},
